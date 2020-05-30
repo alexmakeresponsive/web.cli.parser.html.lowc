@@ -24,7 +24,7 @@ void parseCompanyName()
     char* page0filename = getPathOutPage(0);
     
     char html0Raw[600000];
-    
+    int  htmlRawIndexCurrent = 0;
     
     // file size
     struct stat st;
@@ -45,13 +45,21 @@ void parseCompanyName()
         file = fopen(page0filename, "r");
     if (file) {
         while ((ch = getc(file)) != EOF)
+        {
             if(ch == '\n')
             {
                 lineCount++;
             }
+        
+                html0Raw[htmlRawIndexCurrent] = ch;
+                htmlRawIndexCurrent++;
+        }
         fclose(file);
     }
 
     printf("file line count: %d \n", lineCount);
     // file line count
+    
+    printf("html0Raw \n");
+    printf("%s", html0Raw);
 }
