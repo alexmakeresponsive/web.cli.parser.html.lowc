@@ -10,5 +10,6 @@
 #define parser_h
 
 int parseCompanyName(void);
+int findCompanyByName(long indexCurrent);
 
 #endif /* parser_h */
