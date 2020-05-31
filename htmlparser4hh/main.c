@@ -29,7 +29,6 @@ int main(int argc, const char * argv[]) {
 //        return 0;
 //    }
     
-    printf("parse data");
     parseCompanyName();
     
     return 0;

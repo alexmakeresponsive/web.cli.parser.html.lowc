@@ -9,6 +9,6 @@
 #ifndef parser_h
 #define parser_h
 
-void parseCompanyName(void);
+int parseCompanyName(void);
 
 #endif /* parser_h */

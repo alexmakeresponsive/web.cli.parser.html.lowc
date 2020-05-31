@@ -15,44 +15,41 @@
 
 #define CHUNK 1024
 
+#define MODE_POINTER_READ 0
+#define MODE_POINTER_COPY 1
 
-void parseCompanyName()
+#define MODE_COMPARE_STOP 0
+#define MODE_COMPARE_RESUME 1
+
+int parseCompanyName()
 {
-    FILE* fp;
     
-    char* dirDataPath = getPathOut();
     char* page0filename = getPathOutPage(0);
     
-    char html0Raw[600000];
-    int  html0RawIndexCurrent  = 0;     // for read from file
-    int  html0RawIndex2Current = 0;     // for parse html0Raw
-    int  html0RawCharCount = 0;
+    char htmlRaw[600000];
+    long htmlRawIndex = 0;
     
-    char htmlChunkFind[] = "data-qa=\"vacancy-serp__vacancy-employer\">";
-    int  htmlChunkFindIndexCurrent = 0;
-    int  htmlChunkFindIndexCompare = 0;
-    char text[128];
-    char textList[500][128];
+    int  htmlRawIndexCurrent  = 0;     // for read from file
+    int  htmlRawCharCount = 0;
     
-    // file size
-    struct stat st;
-           off_t size;
     
-    stat(page0filename, &st);
-
-    size = st.st_size;
-    printf("\n");
-    printf("file size: %i bytes \n", size);
-    // file size
+    
+    
+    printf("Parse company name \n");
+    
+    
+    
     
     // file line count
-    int   c;
     char  ch;
     FILE* file;
     int   lineCount = 0;
     
+    
+    
         file = fopen(page0filename, "r");
-    if (file) {
+    if (file)
+    {
         while ((ch = getc(file)) != EOF)
         {
             if(ch == '\n')
@@ -60,18 +57,18 @@ void parseCompanyName()
                 lineCount++;
             }
         
-                html0Raw[html0RawIndexCurrent] = ch;
-                html0RawIndexCurrent++;
-                html0RawCharCount++;
+                htmlRaw[htmlRawIndexCurrent] = ch;
+                htmlRawIndexCurrent++;
+                htmlRawCharCount++;
         }
         fclose(file);
     }
 
     printf("file line count: %d lines \n", lineCount);
-    printf("file chars count: %d chars \n", html0RawCharCount);
-    printf("html0Raw [] sizeof: %d \n", sizeof(html0Raw));
-    printf("htmlChunkFind [] sizeof: %d \n", sizeof(htmlChunkFind));
+    printf("file сhar сount: %d chars \n", htmlRawCharCount);
     // file line count
+    
+
     
 
     
@@ -83,6 +80,144 @@ void parseCompanyName()
     // if symbol == '<' then copy text to textList and htmlChunkFindIndexCompare = 0;
     // if symbol == '>' then htmlChunkFindIndexCompare = 0;
     
+//    printf("htmlRaw []: %s \n", (htmlRaw));
+//    return 0;
     
+    
+    
+    
+    char stringBeforeText[] = "data-qa=\"vacancy-serp__vacancy-employer\">";
+    long stringBeforeTextIndex = 0;
+    
+    char stringBeforeTextCompare[256];
+    
+    
+    long stringBeforeTextIndexCompare = 0;
+    long stringBeforeTextCompareLevel = 0;
+    
+    int  modePointer = MODE_POINTER_READ;
+    int  modeCompare = MODE_COMPARE_STOP;
+    
+    char textList[1000][128];
+    
+    long textListIndex1 = 0;
+    long textListIndex2 = 0;
+    
+    int itemsCopyCount  = 0;
+    int itemsCopyCountCurrent = 0;
+    
+//    printf("stringBeforeText length: %lu \n", strlen(stringBeforeText));
+//    return 0;
+    
+    while (htmlRawIndex < strlen(htmlRaw))
+    {
+        while (stringBeforeTextIndex < strlen(stringBeforeText))
+        {
+            if (modePointer == MODE_POINTER_COPY)
+            {
+//                modeCompare = MODE_COMPARE_STOP;
+//
+//                stringBeforeTextCompareLevel = 0;
+//                stringBeforeTextIndexCompare = 0;
+                
+                break;
+            }
+            
+            if (modeCompare == MODE_COMPARE_RESUME)
+            {
+                stringBeforeTextIndex = stringBeforeTextIndexCompare;
+            }
+            
+            if (htmlRaw[htmlRawIndex] == stringBeforeText[stringBeforeTextIndex])
+            {
+                modeCompare = MODE_COMPARE_RESUME;
+                
+                stringBeforeTextCompareLevel++;
+                stringBeforeTextIndexCompare++;
+                
+                stringBeforeTextIndex = stringBeforeTextIndexCompare;
+                
+                break;
+            }
 
+                modeCompare = MODE_COMPARE_STOP;
+            
+                stringBeforeTextCompareLevel = 0;
+                stringBeforeTextIndexCompare = 0;
+
+                stringBeforeTextIndex++;
+        }
+        
+        if (stringBeforeTextCompareLevel == strlen(stringBeforeText))
+        {
+//                    printf("MODE_POINTER_COPY enable for index: %lu \n", htmlRawIndex);
+                
+//                for (int i=0; i<=40; i++) {
+//                    printf("%c", htmlRaw[htmlRawIndex + i]);
+//                }
+//                    printf("\n");
+            
+                modePointer = MODE_POINTER_COPY;
+        }
+        
+        if (modePointer == MODE_POINTER_COPY && htmlRaw[htmlRawIndex] != '>' && htmlRaw[htmlRawIndex] != '<')
+        {
+                textList[textListIndex1][textListIndex2] = htmlRaw[htmlRawIndex];
+                textListIndex2++;
+        }
+        
+        if (modePointer == MODE_POINTER_COPY && htmlRaw[htmlRawIndex] == '<')
+        {
+                modePointer = MODE_POINTER_READ;
+                modeCompare = MODE_COMPARE_STOP;
+                
+                stringBeforeTextCompareLevel = 0;
+                stringBeforeTextIndexCompare = 0;
+                
+                textList[textListIndex1][textListIndex2 + 1] = '$';
+
+                textListIndex2 = 0;
+                textListIndex1++;
+            
+                itemsCopyCount++;
+        }
+        
+                stringBeforeTextIndex = 0;
+                htmlRawIndex++;
+    }
+    
+    printf("last htmlRawIndex: %lu \n", htmlRawIndex);
+    printf("compamies count: %d \n", itemsCopyCount);
+          
+           textListIndex1 = 0;
+           textListIndex2 = 0;
+    
+    while (textListIndex1 < itemsCopyCount)
+    {
+        if (itemsCopyCountCurrent == itemsCopyCount)
+        {
+            break;
+        }
+        
+            printf("%lu. ", textListIndex1 + 1);
+        
+        while (textListIndex2 < 256)
+        {
+            if (textList[textListIndex1][textListIndex2] == '$')
+            {
+                itemsCopyCountCurrent++;
+                break;
+            }
+            printf("%c", textList[textListIndex1][textListIndex2]);
+            
+            textListIndex2++;
+        }
+        
+            printf("\n");
+        
+            textListIndex2 = 0;
+            textListIndex1++;
+    }
+    
+    return 0;
 }
