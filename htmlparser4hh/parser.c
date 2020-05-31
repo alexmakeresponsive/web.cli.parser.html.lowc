@@ -200,12 +200,7 @@ int parseCompanyName()
         }
         
         // clean buffer
-        if (strlen(textListFilterBuffer) != 0)
-        {
-            
-        }
-        
-        while (textListFilterBuffer[textListFilterBufferIndex] != '\0')
+        while (textListFilterBufferIndex < 128)
         {
             textListFilterBuffer[textListFilterBufferIndex] = '\0';
             textListFilterBufferIndex++;
@@ -232,6 +227,7 @@ int parseCompanyName()
         // copy company to buffer
         
         
+        // filter company
             iterationStatePrint = RESUME;
         
             findCompanyByName(textListIndex1);
@@ -243,6 +239,8 @@ int parseCompanyName()
             
             continue;
         }
+        // filter company
+
         
             printf("%-4s%lu. ", "", textListIndex1 + 1);
 
@@ -269,8 +267,11 @@ int parseCompanyName()
             printf("\033[0m");
             printf("\n");
 
-            
     
+    printf("companies count removed: %d \n", itemsCopyCount - itemsCopyCountCurrent);
+    printf("companies count after filter: %d \n", itemsCopyCountCurrent);
+    
+            printf("\n");
     
     
     // filter results
@@ -300,6 +301,28 @@ int findCompanyByName(long indexCurrent)
     
     while (textListIndex1 < itemsCopyCount)
     {
+        if(textListIndex1 < indexCurrent || indexCurrent == 0)
+        {
+            textListFilterBufferCurrentIndex = 0;
+            textListFilterBufferIndex = 0;
+            textListIndex2 = 0;
+        
+            textListIndex1++;
+            
+            
+            
+            continue;
+        }
+        
+        // clean buffer
+        while (textListFilterBufferCurrentIndex < 128)
+        {
+            textListFilterBufferCurrent[textListFilterBufferCurrentIndex] = '\0';
+            textListFilterBufferCurrentIndex++;
+        }
+            textListFilterBufferCurrentIndex = 0;
+        // clean buffer
+        
         if(textListIndex1 <= indexCurrent)
         {
             textListIndex1++;
