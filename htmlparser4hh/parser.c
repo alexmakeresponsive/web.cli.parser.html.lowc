@@ -87,10 +87,8 @@ int parseCompanyName()
     
     
     char stringBeforeText[] = "data-qa=\"vacancy-serp__vacancy-employer\">";
+    long stringBeforeTextLength = strlen(stringBeforeText);
     long stringBeforeTextIndex = 0;
-    
-    char stringBeforeTextCompare[256];
-    
     
     long stringBeforeTextIndexCompare = 0;
     long stringBeforeTextCompareLevel = 0;
@@ -106,20 +104,15 @@ int parseCompanyName()
     int itemsCopyCount  = 0;
     int itemsCopyCountCurrent = 0;
     
-//    printf("stringBeforeText length: %lu \n", strlen(stringBeforeText));
-//    return 0;
+    long htmlRawLength = strlen(htmlRaw);
     
-    while (htmlRawIndex < strlen(htmlRaw))
+    
+    while (htmlRawIndex < htmlRawLength)
     {
-        while (stringBeforeTextIndex < strlen(stringBeforeText))
+        while (stringBeforeTextIndex < stringBeforeTextLength)
         {
             if (modePointer == MODE_POINTER_COPY)
             {
-//                modeCompare = MODE_COMPARE_STOP;
-//
-//                stringBeforeTextCompareLevel = 0;
-//                stringBeforeTextIndexCompare = 0;
-                
                 break;
             }
             
@@ -148,15 +141,8 @@ int parseCompanyName()
                 stringBeforeTextIndex++;
         }
         
-        if (stringBeforeTextCompareLevel == strlen(stringBeforeText))
+        if (stringBeforeTextCompareLevel == stringBeforeTextLength)
         {
-//                    printf("MODE_POINTER_COPY enable for index: %lu \n", htmlRawIndex);
-                
-//                for (int i=0; i<=40; i++) {
-//                    printf("%c", htmlRaw[htmlRawIndex + i]);
-//                }
-//                    printf("\n");
-            
                 modePointer = MODE_POINTER_COPY;
         }
         
@@ -192,6 +178,9 @@ int parseCompanyName()
            textListIndex1 = 0;
            textListIndex2 = 0;
     
+            printf("\n");
+            printf("\033[0;32m");
+    
     while (textListIndex1 < itemsCopyCount)
     {
         if (itemsCopyCountCurrent == itemsCopyCount)
@@ -199,7 +188,7 @@ int parseCompanyName()
             break;
         }
         
-            printf("%lu. ", textListIndex1 + 1);
+            printf("%-4s%lu. ", "", textListIndex1 + 1);
         
         while (textListIndex2 < 256)
         {
@@ -218,6 +207,9 @@ int parseCompanyName()
             textListIndex2 = 0;
             textListIndex1++;
     }
+    
+            printf("\033[0m");
+            printf("\n");
     
     return 0;
 }
