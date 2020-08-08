@@ -46,7 +46,7 @@ int parseCompanyName()
     
     
     
-    
+    printf("\n");
     printf("Parse company name \n");
     
     
@@ -166,8 +166,6 @@ int parseCompanyName()
                 
                 stringBeforeTextCompareLevel = 0;
                 stringBeforeTextIndexCompare = 0;
-                
-                textList[textListIndex1][textListIndex2 + 1] = '$';
 
                 textListIndex2 = 0;
                 textListIndex1++;
@@ -194,11 +192,6 @@ int parseCompanyName()
     
     while (textListIndex1 < itemsCopyCount)
     {
-        if (itemsCopyCountCurrent == itemsCopyCount)
-        {
-            break;
-        }
-        
         // clean buffer
         while (textListFilterBufferIndex < 128)
         {
@@ -210,13 +203,8 @@ int parseCompanyName()
         // clean buffer
         
         // copy company to buffer
-        while (textListIndex2 < 256)
+        while (textListIndex2 < 128)
         {
-            if (textList[textListIndex1][textListIndex2] == '$')
-            {
-                break;
-            }
-            
             textListFilterBuffer[textListFilterBufferIndex] = textList[textListIndex1][textListIndex2];
             
             textListFilterBufferIndex++;
@@ -234,9 +222,15 @@ int parseCompanyName()
         
         if (iterationStatePrint == CONTINUE)
         {
+            printf("\033[0;31m");
+            printf("%-4s%lu. ", "", textListIndex1 + 1);
+            printf("%s", textListFilterBuffer);
+            printf("\n");
+            printf("\033[0;32m");
+                        
             textListIndex2 = 0;
             textListIndex1++;
-            
+
             continue;
         }
         // filter company
@@ -244,19 +238,12 @@ int parseCompanyName()
         
             printf("%-4s%lu. ", "", textListIndex1 + 1);
 
-        while (textListIndex2 < 256)
+        while (textListIndex2 < 128)
         {
-            if (textList[textListIndex1][textListIndex2] == '$')
-            {
-                itemsCopyCountCurrent++;
-                break;
-            }
-
             printf("%c", textList[textListIndex1][textListIndex2]);
 
             textListIndex2++;
         }
-
             printf("\n");
         
             
@@ -277,7 +264,7 @@ int parseCompanyName()
     // filter results
     
     // How filter results?
-    // add loop before loop( while (textListIndex2 < 256) ) for check it
+    // add loop before loop( while (textListIndex2 < 128) ) for check it
     // Copy chars of company to buffer
     // Compare chars for next company with char in buffer
     // if all chars match then break loop( while (textListIndex1 < itemsCopyCount) )
@@ -301,7 +288,7 @@ int findCompanyByName(long indexCurrent)
     
     while (textListIndex1 < itemsCopyCount)
     {
-        if(textListIndex1 < indexCurrent || indexCurrent == 0)
+        if(textListIndex1 <= indexCurrent)
         {
             textListFilterBufferCurrentIndex = 0;
             textListFilterBufferIndex = 0;
@@ -323,25 +310,10 @@ int findCompanyByName(long indexCurrent)
             textListFilterBufferCurrentIndex = 0;
         // clean buffer
         
-        if(textListIndex1 <= indexCurrent)
-        {
-            textListIndex1++;
-            
-            continue;
-        }
         
-        while (textListIndex2 < 256)
+        
+        while (textListIndex2 < 128)
         {
-            if (textList[textListIndex1][textListIndex2] == '$')
-            {
-                break;
-            }
-            
-            if (textListFilterBuffer[textListFilterBufferIndex] == '\0')
-            {
-                break;
-            }
-            
             textListFilterBufferCurrent[textListFilterBufferCurrentIndex] = textList[textListIndex1][textListIndex2];
             
             textListFilterBufferCurrentIndex++;
@@ -349,11 +321,18 @@ int findCompanyByName(long indexCurrent)
             textListIndex2++;
         }
         
+        if(indexCurrent == 8)
+        {
+//            printf("textListFilterBufferCurrent: %s \n", textListFilterBufferCurrent);
+//            printf("compare %d \n", strncmp(textListFilterBuffer, textListFilterBufferCurrent, 10));
+        }
             
         if (strncmp(textListFilterBuffer, textListFilterBufferCurrent, 10) == 0)
         {
 //            printf("textListFilterBuffer: %s \n", textListFilterBuffer);
 //            printf("textListFilterBufferCurrent: %s \n", textListFilterBufferCurrent);
+            
+            
             
             iterationStatePrint = CONTINUE;
             break;
@@ -365,6 +344,8 @@ int findCompanyByName(long indexCurrent)
         
             textListIndex1++;
     }
+    
+    
     
     return 0;
 }
